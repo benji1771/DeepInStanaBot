@@ -19,25 +19,30 @@ module.exports = {
                 .setDescription('Language to be translated to')
                 .setRequired(false)),
 	async execute(interaction) {
-        
+
+        const languageCodes = new Map();
+        const languageNames = new Map();
+        //Set Target Languages Options
+        const targets = await translator.getTargetLanguages();
+        languageCodes.set('english', 'en-US');
+        languageCodes.set('chinese-simplified', 'zh');
+        languageNames.set('en', 'English');
+        for(let i = 0; i < targets.length; i++){
+            languageCodes.set(targets[i].name.toLowerCase(), targets[i].code);
+            languageNames.set(targets[i].code, targets[i].name);
+        }
+
+        //Grab User Inputs
         const userInput = interaction.options.getString('input');
         const outputLanguage = interaction.options.getString('target');
 
-        const languageCodes = new Map();
-        
-        const targets = await translator.getTargetLanguages();
-
-        languageCodes.set('english', 'en-US');
-        languageCodes.set('chinese-simplified', 'zh');
-        for(let i = 0; i < targets.length; i++){
-            languageCodes.set(targets[i].name.toLowerCase(), targets[i].code);
-            
-        }
-        
         const targetLanguageCode = outputLanguage ? languageCodes.get(outputLanguage.toLowerCase()) : 'en-US';
-        
         const translated =  await translator.translateText(userInput, null, targetLanguageCode);
-        await interaction.reply(translated.text);
+        
+        let outputText = languageNames.get(translated.detectedSourceLang) + ': ' + userInput + '\n' + 
+                        languageNames.get(targetLanguageCode) + ': ' + translated.text;
+
+        await interaction.reply(outputText);
 		
 	},
 };
