@@ -1,5 +1,5 @@
 const deepl = require('deepl-node');
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const dotenv = require('dotenv');
 dotenv.config();
 
@@ -35,14 +35,16 @@ module.exports = {
         //Grab User Inputs
         const userInput = interaction.options.getString('input');
         const outputLanguage = interaction.options.getString('target');
-
+        
         const targetLanguageCode = outputLanguage ? languageCodes.get(outputLanguage.toLowerCase()) : 'en-US';
         const translated =  await translator.translateText(userInput, null, targetLanguageCode);
         
-        let outputText = languageNames.get(translated.detectedSourceLang) + ': ' + userInput + '\n' + 
-                        languageNames.get(targetLanguageCode) + ': ' + translated.text;
+        const embed = new EmbedBuilder()
+			.setColor(0xE4A43F)
+			.setTitle(languageNames.get(targetLanguageCode))
+			.setDescription(translated.text);
 
-        await interaction.reply(outputText);
+        await interaction.reply({ content: userInput, embeds: [embed] });
 		
 	},
 };
