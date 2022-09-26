@@ -41,7 +41,7 @@ module.exports = {
         
         const embed = new EmbedBuilder()
 			.setColor(0xE4A43F)
-			.setTitle(languageNames.get(targetLanguageCode))
+			.setTitle(languageNames.get(translated.detectedSourceLang) + " => " +languageNames.get(targetLanguageCode))
 			.setDescription(translated.text);
 
         await interaction.reply({ content: userInput, embeds: [embed] });
